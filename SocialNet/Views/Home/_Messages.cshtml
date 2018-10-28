@@ -1,0 +1,28 @@
+﻿@model List<SocialNet.Models.MessageViewModel>
+
+@if (Model != null)
+{
+
+    foreach (var item in Model)
+    {
+        string[] text = item.Text.Split(new string[] { "<br/>" }, StringSplitOptions.None);
+        string classOfMess = item.IsRead ? "" : ((item.From == User.Identity.Name) ? "message-from" : "message-to");
+<div class="message @classOfMess">
+    <div class="message-container">
+        <b>
+            @(item.From + ":")
+        </b><i style="font-size:10px;">@(" " + item.Date.ToString().Replace(" ", ", "))</i>
+        <div class=" d-flex flex-row message-row">
+            <img class="img-@(item.From==User.Identity.Name?"message-from":"message-to") mini-avatar" />
+            <div class="message-person">
+                @foreach (var t in text)
+                {
+                    @t;
+                    <br />
+                }
+            </div>
+        </div>
+    </div> 
+</div>
+    }
+}

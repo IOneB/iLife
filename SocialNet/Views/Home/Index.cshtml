@@ -1,0 +1,32 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+@foreach (SocialNet.Models.PostView post in ViewBag.PostViews)
+{
+    @Html.Partial("Post", post)
+}
+
+<div id="win" style="display:none;">
+    <div id="overlay" class="overlay" style="overflow:auto;"></div>
+    <div class="imagecontainer">
+        <div class="visible">
+            <div class="swiper-container">
+                <img id="modal-im-0" class="imgcont" onclick="next(1)" hidden />
+                <img id="modal-im-1" class="imgcont" onclick="next(2)" hidden />
+                <img id="modal-im-2" class="imgcont" onclick="next(3)" hidden />
+                <img id="modal-im-3" class="imgcont" onclick="next(4)" hidden />
+                <img id="modal-im-4" class="imgcont" onclick="next(5)" hidden />
+                <img id="modal-im-5" class="imgcont" onclick="next(6)" hidden />
+                <img id="modal-im-6" class="imgcont" onclick="next(7)" hidden />
+                <img id="modal-im-7" class="imgcont" onclick="next(8)" hidden />
+                <img id="modal-im-8" class="imgcont" onclick="next(9)" hidden />
+                <img id="modal-im-9" class="imgcont" onclick="next(0)" hidden />
+            </div>
+            <div class="d-flex justify-content-center">
+                <button type="button" class="btn button mt-1"  onClick="empty()">Закрыть</button>
+            </div>
+        </div>
+    </div>
+    
+</div>

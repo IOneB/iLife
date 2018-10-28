@@ -1,0 +1,145 @@
+﻿@model List<SocialNet.Models.ApplicationUser>
+
+@{
+    ViewBag.Title = "Search";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="d-flex centerflex">
+    Результаты поиска
+</div>
+@if (Model.Count == 0 && ViewBag.listFriends.Count == 0 && ViewBag.listContacts.Count == 0)
+{
+    <div class="alert-danger">
+        Пользователи все же не найдены...
+    </div>
+}
+@if (ViewBag.listFriends.Count != 0)
+{
+    <div class="d-flex centerflex">
+        Среди друзей
+    </div>
+    <div id="friend-container">
+        @{
+            var i = 0;
+        }
+        @foreach (var item in ViewBag.listFriends)
+        {
+            <div class="d-flex flex-row searchrow">
+                <div>
+                    @if (@item.ImagePath == null)
+                    {
+                        <img class="userphoto" src="~/Content/image/interface/default-avatar.jpg" />
+                    }
+                    else
+                    {
+                        <img class="userphoto" src="@item.ImagePath" />
+                    }
+                </div>
+                <div class="searchcolumn">
+                    @{
+                        string userName = item.UserSurname + " " + item.UserFullName;
+                    }
+                    @Html.ActionLink(userName, "Index", "Home", routeValues: new { CommentAddressee = item.UserName }, htmlAttributes: new { @class = "btn searchuserrow" })
+                </div>
+                <div>
+                    @Ajax.ActionLink("Удалить", "CancelRequest", "Home", null, null, new
+                    {
+                    @class = "btn button",
+                    @href = "/Home/CancelRequest?contactName=" + item.UserName,
+                    @onclick = "removeFriend(this, true);",
+                    @id="friend-" + i
+                    })
+                </div>
+                <div>
+                    @Html.ActionLink("Написать", "Dialog", "Home", null, new
+                    {
+                    @class = "btn button",
+                    @href = "/Home/Dialog?receiverUser=" + item.UserName,
+                    @id = "dialog-" + i
+                    })
+                </div>
+            </div>
+            i++;
+        }
+    </div>
+}
+
+@if (ViewBag.listContacts.Count != 0)
+{
+    var i = 0;
+    <div class="d-flex centerflex">
+        Среди контактов
+    </div>
+    <div id="contact-container">
+        @foreach (var item in ViewBag.listContacts)
+        {
+            <div class="d-flex flex-row searchrow">
+                <div>
+                    @if (@item.ImagePath == null)
+                    {
+                        <img class="userphoto" src="~/Content/image/interface/default-avatar.jpg" />
+                    }
+                    else
+                    {
+                        <img class="userphoto" src="@item.ImagePath" />
+                    }
+                </div>
+                <div class="searchcolumn">
+                    @{
+                        string userName = item.UserSurname + " " + item.UserFullName;
+                    }
+                    @Html.ActionLink(userName, "Index", "Home", routeValues: new { CommentAddressee = item.UserName }, htmlAttributes: new { @class = "btn searchuserrow" })
+                </div>
+                <div>
+                    @Ajax.ActionLink("Отменить запрос", "CancelRequest", "Home", null, null, new
+               {
+                   @class = "btn button",
+                   @href = "/Home/CancelRequest?contactName=" + item.UserName,
+                   @onclick = "removeFriend(this,false);"
+               })
+                </div>
+            </div>
+            i++;
+        }
+    </div>
+}
+
+@if (Model.Count != 0)
+{
+    var i = 0;
+    <div class="d-flex centerflex">
+        Глобальный поиск
+    </div>
+    <div id="global-container">
+        @foreach (var item in Model)
+        {
+            <div class="d-flex flex-row searchrow">
+                <div>
+                    @if (@item.ImagePath == null)
+                    {
+                        <img class="userphoto" src="~/Content/image/interface/default-avatar.jpg" />
+                    }
+                    else
+                    {
+                        <img class="userphoto" src="@item.ImagePath" />
+                    }
+                </div>
+                <div class="searchcolumn">
+                    @Html.ActionLink(item.UserSurname + " " + item.UserFullName, "Index",
+                   "Home", routeValues: new { CommentAddressee = @item.UserName },
+                   htmlAttributes: new { @class = "btn searchuserrow" })
+                </div>
+                <div>
+                    @Ajax.ActionLink("Добавить в друзья", "AddContact", "Home", null, null, new
+               {
+                   @class = "btn button",
+                   @href = "/Home/AddContact?contactName=" + item.UserName,
+                   @onclick = "addFriend(this,false);"
+               })
+                </div>
+            </div>
+            i++;
+        }
+    </div>
+}

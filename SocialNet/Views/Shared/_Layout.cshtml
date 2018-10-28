@@ -1,0 +1,97 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+    @Styles.Render("~/Content/css")
+    @Styles.Render("~/Content/Site.css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+    @Scripts.Render("~/scripts/jquery-3.0.0.js")
+    @Scripts.Render("~/scripts/jquery.unobtrusive-ajax.js")
+    @Scripts.Render("~/Scripts/VanyaPowerScript.js")
+    @if (User.Identity.IsAuthenticated)
+    {
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $.ajax(
+                    {
+                        type: "POST",
+                        url: "/Home/NewRequests",
+                        success: function (result) { $('#contacts').html(result) }
+                    });
+            });
+        </script>
+    }
+    <!--Шрифты-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body id="windows">
+
+    <div class="mainflex d-flex align-items-stretch">
+
+        <div class="submainflex d-flex flex-row">
+            <div class="subbodyflex d-flex flex-column">
+                <div class="d-flex top-menu">                    
+                    @Html.Partial("_LoginPartial")
+                </div>
+
+                <div class="bodyflex d-flex flex-row">
+                    <div class="leftpanel p-2">
+                        <div class=" d-flex flex-column">
+                            <div class="avatar-container">
+                                @if (ViewBag.Gorshok != User.Identity.Name && ViewBag.TitlePage == "Index")
+                                {
+                                    <img id="defaultavatar" alt="DefaultAvatar" class="img-thumbnail img-fluid" src=@(User.Identity.IsAuthenticated == true ? Url.Content("~/Content/users/" + ViewBag.Gorshok + "/avatar.jpg") : Url.Content("~/Content/image/interface/default-avatar.jpg")) />
+                                }
+                                else
+                                {
+                                    <img id="defaultavatar" alt="DefaultAvatar" class="img-thumbnail img-fluid" src=@(User.Identity.IsAuthenticated == true ? Url.Content("~/Content/users/" + User.Identity.Name + "/avatar.jpg") : Url.Content("~/Content/image/interface/default-avatar.jpg")) />
+                                }
+                            </div>
+                            @if (Request.IsAuthenticated)
+                            {
+                                if (ViewBag.Gorshok != User.Identity.Name && ViewBag.TitlePage == "Index")
+                                {
+                                    if (ViewBag.InFriends == "Request")
+                                    {
+                                        <a class="btn button cancel-request" data-ajax="true" href="/Home/CancelRequest?contactName=@ViewBag.Gorshok" id="addContact"> ✔ Запрос отправлен</a>
+                                    }
+                                    else if (ViewBag.InFriends == "Friend")
+                                    {
+                                        <a class="btn button cancel-request" data-ajax="true" href="/Home/CancelRequest?contactName=@ViewBag.Gorshok" id="addContact">В друзьяшках! 🚷</a>
+                                        @Html.ActionLink("Написать", "Dialog", "Home", new { @receiverUser = ViewBag.Gorshok }, new { @class = "btn button" })
+                                    }
+                                    else
+                                    {
+                                        @Ajax.ActionLink("Добавить в контакты", "AddContact", "Home", new { contactName = ViewBag.Gorshok }, null, new { @class = "btn button", @id = "addContact" })
+                                    }
+                                }
+                                <div id="contacts">@Html.ActionLink("Контакты", "Contacts", "Home", null, new { @style = "width:100%;", @class = "btn button" })</div>
+                                @Html.ActionLink("Домашняя страница", "Index", "Home", null, new { @class = "btn button" })
+                            }
+                            else
+                            {
+                                @Html.ActionLink("О нас", "Contact", "Home", null, new { @class = "btn button" })
+                            }
+                        </div>
+                    </div>
+                    <div class="rightpanel">
+                        <div class="container body-content">
+                            <div class="partialViewWrapper">
+                                @RenderBody()
+                            </div>                           
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>

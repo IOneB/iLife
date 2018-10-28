@@ -1,0 +1,111 @@
+﻿@model List<SocialNet.Models.MessageViewModel>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+    <div class="d-flex centerflex">
+        Ваш диалог с @ViewBag.interlocutor
+    </div>
+    <div class="main">
+        <div id="chatBody">
+            <div id="header"></div>
+            <div class="chatroom" id="chatroom">
+                @if (Model != null)
+                {
+                    <div id="loading">
+                        <img src='@Url.Content("~/Content/loading_spinner.gif")' width="70" height="70">
+                    </div>
+                    <div id="update">
+                        @Html.Partial("_Messages")
+                    </div>
+                }
+                else
+                {
+                    <div id="loading">
+                        <img src='@Url.Content("~/Content/loading_spinner.gif")' width="70" height="70">
+                    </div>
+                    <div id="update">
+
+                    </div>
+                }
+            </div>
+            <div id="inputForm">
+                <textarea id="message"></textarea>
+                <input id="username" type="hidden" value="@ViewBag.interlocutor" />
+                <input type="button" name="" class="btn button" id="sendmessage" value="Отправить" />
+            </div>
+        </div>
+    </div>
+   
+    <!--Ссылка на библиотеку SignalR -->
+    <script src="~/Scripts/jquery.signalR-2.2.3.min.js"></script>
+    <!--Ссылка на автоматически сгенерированный скрипт хаба SignalR -->
+    <script src="~/signalr/hubs"></script>
+    <script src="~/Scripts/util.js"></script>
+    <script src="~/Scripts/jquery.nicescroll.js"></script>
+    <script type="text/javascript">
+        $(function () {
+
+            $('div#loading').hide();
+
+            var page = 0;
+            var _inCallback = false;
+            function loadItems() {
+                if (page > -1 && !_inCallback) {
+                    _inCallback = true;
+                    page++;
+                    $('div#loading').show();
+
+                    $.ajax({
+                        type: 'GET',
+                        url: '/Home/Dialog?id=' + page + '&' + 'receiverUser=' + $('#username').val(),
+                        success: function (data, textstatus) {
+                            if (data != '') {
+                                $("#update").prepend(data);
+                            }
+                            else {
+                                page = -1;
+                            }
+                            _inCallback = false;
+                            $("div#loading").hide();
+                        }
+                    });
+                }
+            }
+            // обработка события скроллинга
+            $('#chatroom').scroll(function () {
+                if ($('#chatroom').scrollTop() == 0) {
+                    loadItems();
+                }
+            });
+        })
+    </script>
+</body>
+</html>
+
+<style>
+    .img-message-from {
+        content: url(@("/Content/users/" + User.Identity.Name + "/avatar.jpg"));
+    width:60px;
+    height:60px;
+    }
+
+    .img-message-to{
+            content: url(@("/Content/users/" + ViewBag.interlocutor + "/avatar.jpg"));
+    width:60px;
+    height:60px;
+    }
+
+    .mini-avatar {
+    width: 60px;
+    margin-right: 20px;
+    border-radius: 50%;
+}
+</style>

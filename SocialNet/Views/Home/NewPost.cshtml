@@ -1,0 +1,67 @@
+﻿@model IEnumerable<string>
+<div class="d-flex flex900">
+    <div class="col-sm-12">
+        <div class="jumbotron">
+            <div class="row">
+                <div class="col-sm-12">
+                    @using (Html.BeginForm("SavePost", "Home"))
+                    {
+                        <div class="col-sm-12">
+                            <input class="postTheme" placeholder="Тема" id="Theme" name="Theme" value="@ViewBag.Theme" oninput="document.getElementById('Theme1').value=this.value;" onkeydown="document.getElementById('Theme1').value=this.value;" />
+                        </div>
+                        <div class="col-sm-12">
+                            <textarea class="sometextt" placeholder="Введите текст" id="Text" name="Text" onkeyup="copy_text(this.value)">@ViewBag.Text</textarea>
+                        </div>
+                        <div class="col-sm-12">
+                            <input class="btn button" id="SavePost" name="SavePost" type="submit" value="Отправить" />
+                        </div>
+                    }
+                </div>
+
+                <div class="col-sm-6">
+                    <div id="Attaches">
+                        <ul>
+                            @if (Model != null)
+                            {
+                                <p class="texthref">Список загруженных файлов:</p>
+                                foreach (var fName in Model)
+                                {
+                                    var name = fName;
+                                    var link = @Url.Content("~/Content/users/" + @User.Identity.Name + "/newfiles/") + fName;
+                                    string filename = fName.Replace(" ", "%20");
+                                    <li class="texthref">
+                                        <a href="@link">@name</a>
+                                        @using (Html.BeginForm("DeleteAttach", "Home"))
+                                        {
+                                            <input type="text" id="Theme1" name="Theme1" value="@ViewBag.Theme" hidden>
+                                            <input type="text" id="Text1" name="Text1" value="@ViewBag.Text" hidden>
+                                            <input type="text" id="file" name="file" value=@filename hidden>
+                                            <input class="btnDelete" id="DeleteAttach" name="DeleteAttach" type="submit" value="Отправить" />
+                                        }
+                                    </li>
+                                }
+                            }
+                        </ul>
+                    </div>
+                    @using (Html.BeginForm("AddAttach", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                    {
+                        <input class="downloadformat" type="file" name="file" id="file" value="Choose File" accept="image/jpg,image/jpeg,image/bmp,image/gif,image/png,audio/mp3,audio/wma,audio/wav,video/mp4,video/avi,video/mpeg" />
+                        <input type="text" id="Theme1" name="Theme1" value="@ViewBag.Theme" hidden>
+                        <input type="text" id="Text1" name="Text1" value="@ViewBag.Text" hidden>
+                        <button class="btn button downloadformat" id="AddAttach" name="AddAttach" type="submit">Загрузить</button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    function copy_text(val) {
+
+        document.getElementById("Text1").value = val;
+
+    }
+
+</script>

@@ -1,0 +1,42 @@
+﻿@model SocialNet.Models.Message
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Message</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.ApplicationUser.UserSurname)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ApplicationUser.UserSurname)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.SomeText)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.SomeText)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.SentTime)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.SentTime)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.MessageId }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

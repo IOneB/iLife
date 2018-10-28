@@ -1,0 +1,28 @@
+﻿@model IEnumerable<string>
+<hr>
+@using (Html.BeginForm("SaveComment", "Home"))
+{
+    <div class="row">
+        <div class="col-sm-1">
+            <img class="userphoto" src="@ViewBag.NewComment.ApplicationUser.ImagePath" />
+        </div>
+        <div class="col-sm-11">
+            @if (ViewBag.Href != null)
+            {
+                <textarea class="commenttext" id="Text" name="Text">@ViewBag.Href</textarea>
+                <input id="Href" name="Href" value="@ViewBag.Href" hidden />
+            }
+            else
+            {
+                <textarea class="commenttext" placeholder="Ваш комментарий..." id="Text" name="Text"></textarea>
+            }
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-offset-10">
+            <input class="btn postComment button" id="SaveComment" name="SaveComment" type="submit" value="Отправить" />
+        </div>
+    </div>
+    <input id="PostId" name="PostId" value="@ViewBag.NewComment.PostId" hidden />
+    <input id="HUserId" name="HUserId" value="@ViewBag.HUserId" hidden />
+}

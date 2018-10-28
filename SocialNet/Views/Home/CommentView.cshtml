@@ -1,0 +1,95 @@
+﻿@using Microsoft.AspNet.Identity;
+@model List<SocialNet.Models.CommentView>
+
+<div class="col-sm-offset-9">
+    @using (Ajax.BeginForm("AddComment", "Home", new AjaxOptions { UpdateTargetId = "com-" + ViewBag.PostId }))
+    {
+        <button class="btnAdd button" type="submit">Добавить комментарий</button>
+        <input hidden value="@ViewBag.PostId" id="PostId" name="PostId" />
+    }
+</div>
+
+@if (Model.Count == 0)
+{
+<div class="row">
+    <div class="col-sm-12">
+        <div class="sometext1 text-center">Нет комментариев</div>
+    </div>
+</div>
+}
+
+@foreach (SocialNet.Models.CommentView comment in Model)
+{
+    <hr>
+    <table class="table-bordered table-condensed table">
+        <tbody>
+            <tr>
+                <td width="40px">
+                    <img class="userphoto" src="@comment.Comment.ApplicationUser.ImagePath" />
+                </td>
+                <td>
+                    <div class="col-sm-8 avatar">
+                        <a href="/Home/Index?CommentAddressee=@comment.Comment.ApplicationUser.UserName">@(comment.Comment.ApplicationUser.UserSurname+" "+comment.Comment.ApplicationUser.UserFullName)</a>
+                    </div>
+                </td>
+                <td width="95px">
+                    <h2 class="sometext1">@comment.Comment.SentTime.ToString("dd/MM/yyyy HH:mm") </h2>
+                </td>
+                <td width="17px">
+                    @if (User.Identity.GetUserId() == comment.Comment.Post.ApplicationUserId || User.Identity.GetUserId() == comment.Comment.ApplicationUserId)
+                    {
+                        using (Html.BeginForm("DeleteComment", "Home", FormMethod.Post, new { id = comment.Comment.CommentId }))
+                        {
+                            <input class="btnDelete" type="submit" form="@comment.Comment.CommentId" value="Отправить" />
+                            <input hidden id="CommentId" name="CommentId" value="@comment.Comment.CommentId" />
+                        }
+                    }
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td width="1" colspan="2">
+                    @if (comment.Href != null)
+                    {
+                        using (Html.BeginForm("Index", "Home"))
+                        {
+                            <input id="CommentAddressee" name="CommentAddressee" value="@comment.Comment.CommentAddressee" hidden />
+                            <input class="userhref" id="Foreign" name="Foreign" type="submit" value="@comment.Href" />
+                        }
+                    }
+                    <p class="sometext100">@comment.Comment.Text</p>
+                </td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="row">
+        <div class="c0l-lg-10 col-sm-9">
+            @using (Ajax.BeginForm("ReplyComment", "Home", new AjaxOptions { UpdateTargetId = "addcom-" + comment.Comment.CommentId }))
+                {
+                <button class="btn button" type="submit">Ответить</button>
+                    <input hidden value="@comment.Comment.CommentId" id="CommentId" name="CommentId" />
+            }
+        </div>
+        <div class="col-lg-3 col-sm-3" style="display: flex; justify-content: flex-end;">
+            @using (Ajax.BeginForm("CommentLike", "Home", new AjaxOptions { UpdateTargetId = "CommentRating" + comment.Comment.CommentId }))
+                {
+            <button class="btn button buttonlike" type="submit"><i class="fa fa-thumbs-up" aria-hidden="true"></i></button>
+                    <input hidden value="@comment.Comment.CommentId" id="CommentId" name="CommentId" />
+            }
+            @using (Ajax.BeginForm("CommentDislike", "Home", new AjaxOptions { UpdateTargetId = "CommentRating" + comment.Comment.CommentId }))
+                {
+                    <button class="btn button buttonlike" type="submit"><i class="fa fa-thumbs-down" aria-hidden="true"></i></button>
+                    <input hidden value="@comment.Comment.CommentId" id="CommentId" name="CommentId" />
+            }
+            <div id="CommentRating@(+comment.Comment.CommentId)">
+                <input class="rating" type="text" value="@comment.CommentRating" readonly />
+            </div>
+        </div>
+    </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div id="addcom-@comment.Comment.CommentId"></div>
+            </div>
+        </div>
+}

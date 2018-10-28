@@ -1,0 +1,33 @@
+﻿@using Microsoft.AspNet.Identity
+@using SocialNet.Models;
+
+
+@if (Request.IsAuthenticated)
+{
+
+    string str="";
+    ApplicationDbContext db = new ApplicationDbContext();
+    var user = db.Users.FirstOrDefault(u=>u.Email==User.Identity.Name);
+    str = user.UserSurname + " " + user.UserFullName;
+    @Html.ActionLink( str, "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Manage", @class = "topitem1 btn button" })
+    using (Html.BeginForm("Search", "Home"))
+    {
+        <input type="text" class="searchtext" placeholder="Поиск.." name="text">
+        <button type="submit" class="searchbutton"><i class="fa fa-search"></i></button>
+    }
+    <div class="mr-auto"></div>
+    @Html.ActionLink("Добавить пост", "NewPost", "Home", null, new { @class = "btn button" })
+
+    using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm" }))
+    {
+        @Html.AntiForgeryToken()
+        <button type="button" class="btn button" onclick="javascript:document.getElementById('logoutForm').submit()">Выйти</button>
+    }
+
+
+}
+else
+{
+    @Html.ActionLink("Войти", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink",  @class = "topitem1 btn button" })
+}
+

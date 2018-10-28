@@ -1,0 +1,141 @@
+﻿@model List<SocialNet.Models.ContactView>
+
+@{
+    ViewBag.Title = "Search";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="d-flex centerflex">
+    Друзья
+</div>
+@if (Model.Count == 0)
+{
+    <div class="alert-danger" id="alert-danger">
+        У вас нет друзей. И никто вас не любит
+    </div>
+    <div id="friend-container"></div>
+}
+else
+{
+    var i = 0;
+    <div id="friend-container">
+        @foreach (var item in Model)
+        {
+
+            <div class="d-flex flex-row searchrow friend" id=@("friend-" + i)>
+                <div>
+                    <img class="userphoto" src="@item.ImagePath" />
+                </div>
+                <div class="searchcolumn">
+                    @{
+                        string userName = (item.Message ? "[✉]" : "") + item.Name;
+                    }
+                    @Html.ActionLink(userName, "Index", "Home", routeValues: new { CommentAddressee = item.UserName }, htmlAttributes: new { @class = "btn searchuserrow" })
+                </div>
+                <div>
+                    @Ajax.ActionLink("Удалить", "CancelRequest", "Home", null, null, new
+               {
+                   @class = "btn button",
+                   @href = "/Home/CancelRequest?contactName=" + item.UserName,
+                   @onclick = "removeContact(" + i + ");",
+                   @id = "friend-first-button-" + i
+               })
+                </div>
+                <div>
+                    @Html.ActionLink("Написать", "Dialog", "Home", null, new
+               {
+                   @class = "btn button",
+                   @href = "/Home/Dialog?receiverUser=" + item.UserName,
+                   @id = "friend-second-button-" + i
+               })
+                </div>
+            </div>
+            i++;
+        }
+    </div>
+
+}<div class="d-flex centerflex">
+    Контакты
+</div>
+@if (ViewBag.listofRequests.Count == 0)
+{
+    <b>Пустя</b>
+}
+else
+{
+    var i = 0;
+    <div id="contact-container">
+        @foreach (var item in ViewBag.listofRequests)
+        {
+            <div class="d-flex flex-row" id=@("contact-" + i)>
+                <div>
+                    <img class="userphoto" src="@item.ImagePath" />
+                </div>
+                <div class="searchcolumn">
+                    @{
+                        string userName = (item.Message ? "[✉]" : "") + item.Name;
+                    }
+                    @Html.ActionLink(userName, "Index", "Home", routeValues: new { CommentAddressee = item.UserName }, htmlAttributes: new { @class = "btn searchuserrow" })
+
+                </div>
+                <div>
+                    @Ajax.ActionLink("Отменить", "CancelRequest", "Home", null, null, new
+               {
+                   @class = "btn button",
+                   @href = "/Home/CancelRequest?contactName=" + item.UserName,
+                   @onclick = "cancelRequest(" + i + ");"
+               })
+                </div>
+            </div>
+            i++;
+        }
+    </div>
+
+}<div class="d-flex centerflex">
+    Новые запросы
+</div>
+@if (ViewBag.listOfNewRequests.Count == 0)
+{
+    <b>Пустя</b>
+}
+else
+{
+    var i = 0;
+    <div id="request-container">
+        @foreach (var item in ViewBag.listOfNewRequests)
+        {
+            <div class="d-flex flex-row request" id=@("request-" + i)>
+                <div>
+                    <img class="userphoto" src="@item.ImagePath" />
+                </div>
+                <div class="searchcolumn">
+                    @{
+                        string userName = (item.Message ? "[✉]" : "") + item.Name;
+                    }
+                    @Html.ActionLink(userName, "Index", "Home", routeValues: new { CommentAddressee = item.UserName }, htmlAttributes: new { @class = "btn searchuserrow" })
+
+                </div>
+                <div>
+                    @Ajax.ActionLink("Добавить", "AddContact", "Home", null, null, new
+               {
+                   @class = "btn button",
+                   @href = "/Home/AddContact?contactName=" + item.UserName,
+                   @onclick = "addContact(this," + i + ");",
+                   @id = "request-first-button-" + i
+               })
+                </div>
+                <div>
+                    @Ajax.ActionLink("Отказать", "CancelRequest", "Home", null, null, new
+               {
+                   @class = "btn button",
+                   @href = "/Home/CancelRequest?contactName=" + item.UserName + "&inverse=true",
+                   @onclick = "denial(" + i + ");",
+                   @id = "request-second-button-" + i
+               })
+                </div>
+
+            </div>
+            i++;
+        }
+    </div>
+}

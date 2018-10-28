@@ -1,0 +1,188 @@
+﻿@using Microsoft.AspNet.Identity;
+@model SocialNet.Models.PostView
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="jumbotron">
+            <div class="row">
+                <div class="col-sm-1">
+                    <img class="userphoto" src="@Model.Post.ApplicationUser.ImagePath" />                    
+                </div>
+                <div class="col-sm-3">
+                    <a href="/Home/Index?CommentAddressee=@Model.Post.ApplicationUser.UserName">@(Model.Post.ApplicationUser.UserSurname + " " + Model.Post.ApplicationUser.UserFullName)</a>
+                </div>
+                <div class="col-sm-4">
+                    <h2 class="postTitle">@Model.Post.Theme</h2>
+                </div>
+                <div class="col-sm-3">
+                    <h2 class="sometext1">@Model.Post.SentTime.ToString("dd/MM/yyyy HH:mm") </h2>
+                </div>
+                <div class="col-sm-1">
+                    @if (User.Identity.GetUserId() == Model.Post.ApplicationUserId)
+                    {
+                        using (Html.BeginForm("DeletePost", "Home", FormMethod.Post, new { id = Model.Post.PostId }))
+                        {
+                            <input class="btnDelete" type="submit" form="@Model.Post.PostId" value="Отправить" />
+                            <input hidden id="PostId" name="PostId" value="@Model.Post.PostId" />
+                        }
+                    }
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    @if (Model.Post.Text != null)
+                    {
+                        <p class="sometext">@Model.Post.Text</p>
+                    }
+                </div>
+            </div>
+            @{int num = Model.PostImages.Count % 3; int imgNum = 0;}
+            @{if (Model.PostImages.Count >= 3)
+                {
+                    for (int i = 0; i < Model.PostImages.Count / 3; i++)
+                    {
+                        <div class="row">
+                            <div class="col-sm-4 imagepadleft">
+                                <img onclick="bigPicture(@Model.Post.PostId, @imgNum, @("\".post\""))" class="tableimg post-@Model.Post.PostId img-@(imgNum++)" src="@Model.PostImages[3*i].AttachmentPath" />
+                            </div>
+                            <div class="col-sm-4 imagepad">
+                                <img onclick="bigPicture(@Model.Post.PostId, @imgNum, @("\".post\""))" class="tableimg post-@Model.Post.PostId img-@(imgNum++)" src="@Model.PostImages[3*i + 1].AttachmentPath" />
+                            </div>
+                            <div class="col-sm-4 imagepadright">
+                                <img onclick="bigPicture(@Model.Post.PostId, @imgNum, @("\".post\""))" class="tableimg post-@Model.Post.PostId img-@(imgNum++)" src="@Model.PostImages[3*i + 2].AttachmentPath" />
+                            </div>
+                        </div>
+                        <div class="row"><p></p></div>
+                    }
+                }
+            }
+            @if (num == 1)
+            {
+                <div class="row">
+                    <div class="col-sm-3"></div>
+                    <div class="col-sm-6 imagepad">
+                        <img onclick="bigPicture(@Model.Post.PostId, @imgNum, @("\".post\""))" class="tableimg post-@Model.Post.PostId img-@(imgNum++)" src="@Model.PostImages[Model.PostImages.Count-1].AttachmentPath" />
+                    </div>
+                    <div class="col-sm-3"></div>
+                </div>
+                <div class="row"><p></p></div>
+            }
+            @if (num == 2)
+            {
+                <div class="row">
+                    <div class="col-sm-1"></div>
+                    <div class="col-sm-5 imagepad">
+                        <img onclick="bigPicture(@Model.Post.PostId, @imgNum, @("\".post\""))" class="tableimg post-@Model.Post.PostId img-@(imgNum++)" src="@Model.PostImages[Model.PostImages.Count-2].AttachmentPath" />
+                    </div>
+                    <div class="col-sm-5 imagepad">
+                        <img onclick="bigPicture(@Model.Post.PostId, @imgNum, @("\".post\""))" class="tableimg post-@Model.Post.PostId img-@(imgNum++)" src="@Model.PostImages[Model.PostImages.Count-1].AttachmentPath" />
+                    </div>
+                    <div class="col-sm-1"></div>
+                </div>
+                <div class="row"><p></p></div>
+            }
+            @foreach (SocialNet.Models.Attachment attach in Model.PostVideo)
+            {
+                <div class="row">
+                    <div class="col-sm-12">
+                        <center> <video width="640" height="360" src="@attach.AttachmentPath" controls autobuffer></video></center>
+                    </div>
+                </div>
+            }
+            @foreach (SocialNet.Models.Attachment attach in Model.PostAudio)
+            {
+                <div class="row">
+                    @{int i = attach.AttachmentPath.LastIndexOf('.');
+                        int j = attach.AttachmentPath.LastIndexOf('\\');
+                        string name = attach.AttachmentPath.Substring(j + 1, i - j - 1);
+                    }
+                    <p class="postMusic">@name</p>
+                    <div class="col-sm-12">
+                        <audio controls>
+                            <source src="@attach.AttachmentPath" type="audio/mp3; audio/ogg;" />
+                        </audio>
+                    </div>
+                </div>
+                        }
+            <div class="row">
+                <div class="c0l-lg-10 col-sm-9">
+                    @using (Ajax.BeginForm("Comment", "Home", new AjaxOptions { UpdateTargetId = "com-" + Model.Post.PostId }))
+                    {
+                        <button class="btn button" type="submit" for="slide1" onclick="Show(@Model.Post.PostId)">Комментарии</button>
+                        <input hidden value="@Model.Post.PostId" id="PostId" name="PostId" />
+                    }
+
+                </div>
+                <div class="col-lg-3 col-sm-3" style="display: flex; justify-content: flex-end;">
+                    @using (Ajax.BeginForm("PostLike", "Home", new AjaxOptions { UpdateTargetId = "PostRating" + Model.Post.PostId }))
+                    {
+                        <button class="btn button" type="submit"><i class="fa fa-thumbs-up" aria-hidden="true"></i></button>
+                            <input hidden value="@Model.Post.PostId" id="PostId" name="PostId" />
+                    }
+                    @using (Ajax.BeginForm("PostDislike", "Home", new AjaxOptions { UpdateTargetId = "PostRating" + Model.Post.PostId }))
+                    {
+                        <button class="btn button" type="submit"><i class="fa fa-thumbs-down" aria-hidden="true"></i></button>
+                            <input hidden value="@Model.Post.PostId" id="PostId" name="PostId" />
+                    }
+                    <div id="PostRating@(+Model.Post.PostId)">
+                        <input class="rating" type="text" value="@Model.PostRating" readonly />
+                    </div>
+                </div>
+            </div>
+            <div class="commentflex">
+                <div id="com-@Model.Post.PostId" class="commentsList hide"></div>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
